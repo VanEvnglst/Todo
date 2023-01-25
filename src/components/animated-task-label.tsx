@@ -25,9 +25,9 @@ const AnimatedText = Animated.createAnimatedComponent(Text)
 const AnimatedTaskLabel = memo((props: Props) => {
   const { strikethrough, textColor, inactiveTextColor, onPress, children } = props;
 
-  const hStackOffset = useSharedValue(0)
-  const textColorProgress = useSharedValue(0)
-  const strikethroughWidth = useSharedValue(0)
+  const hStackOffset = useSharedValue(0);
+  const textColorProgress = useSharedValue(0);
+  const strikethroughWidth = useSharedValue(0);
 
   const hstackAnimatedStyles = useAnimatedStyle(
     () => ({
@@ -49,7 +49,7 @@ const AnimatedTaskLabel = memo((props: Props) => {
 
   const strikethroughAnimatedStyles = useAnimatedStyle(
     () => ({
-      width: `${strikethroughWidth.value * 100}`,
+      width: `${strikethroughWidth.value * 100}%`,
       borderBottomColor: interpolateColor(
         textColorProgress.value,
         [0, 1],
@@ -76,7 +76,7 @@ const AnimatedTaskLabel = memo((props: Props) => {
       strikethroughWidth.value = withTiming(0, { duration: 400, easing })
       textColorProgress.value =  withTiming(0, { duration: 400, easing })
     }
-  },[]);
+  });
 
 
   return (
