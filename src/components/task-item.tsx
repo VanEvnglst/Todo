@@ -10,19 +10,27 @@ import {
   useColorModeValue,
   useToken
 } from 'native-base';
+import Animated, {
+  Easing,
+  useSharedValue,
+  useAnimatedStyle,
+  interpolateColor,
+} from 'react-native-reanimated';
 import AnimatedCheckbox from 'react-native-checkbox-reanimated';
 import AnimatedTaskLabel from './animated-task-label';
-// import SwipableView from './swipable-view';
-import { Feather } from '@expo/vector-icons';
+import SwipableView from './swipable-view';
+import { AntDesign, Feather } from '@expo/vector-icons';
 
 interface Props extends Pick<PanGestureHandlerProps, 'simultaneousHandlers'> {
   isEditing: boolean
   isDone: boolean
+  isPriority: boolean
   onToggleCheckbox?: () => void
   onPressLabel?: () => void
   onRemove?: () => void
   onChangeSubject: (subject: string) => void
   onFinishEditing?: () => void
+  onSetPriority?: () => void
   subject: string 
 }
 
@@ -30,25 +38,25 @@ const TaskItem = (props: Props) => {
   const {
     isEditing,
     isDone,
+    isPriority,
     onToggleCheckbox,
     subject,
     onPressLabel,
     onRemove,
     onChangeSubject,
     onFinishEditing,
+    onSetPriority,
     simultaneousHandlers
   } = props;
 
-
   const highlightColor = useToken(
     'colors', 
-    useColorModeValue('blue.500', 'blue.4000'))
+    useColorModeValue('blue.500', 'blue.400'))
 
   const boxStroke = useToken(
     'colors',
     useColorModeValue('muted.300', 'muted.500')
   )
-
   const checkmarkColor = useToken('colors', useColorModeValue('white', 'white'))
 
   const activeTextColor = useToken('colors',
@@ -75,6 +83,7 @@ const TaskItem = (props: Props) => {
           alignItems='flex-end'
           justifyContent='center'
           pr={4}
+          
         >
           <Icon color='white' as={<Feather name='trash-2' />} size='sm' />
         </Box>
@@ -110,6 +119,8 @@ const TaskItem = (props: Props) => {
             blurOnSubmit
             onChange={handleChangeSubject}
             onBlur={onFinishEditing}
+            w='70%'
+            maxW='80%'
           />
         ) : (
           <AnimatedTaskLabel
@@ -119,9 +130,20 @@ const TaskItem = (props: Props) => {
             onPress={onPressLabel}
           >{subject}</AnimatedTaskLabel>
         )}
+        <Pressable
+          onPress={onSetPriority}
+          flex={1}
+          ml={5}
+        >
+        <Icon
+          color={isPriority ? 'amber.500' : 'warmGray.500'}
+          as={<AntDesign name='star' />} 
+          size='md'
+        />
+        </Pressable>
       </HStack>
     </SwipableView>
   )
 }
 
-export default TaskItem
+export default TaskItem;
