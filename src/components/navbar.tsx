@@ -6,8 +6,9 @@ import { DrawerNavigationProp } from '@react-navigation/drawer';
 
 const NavBar = () => {
 const navigation = useNavigation<DrawerNavigationProp<{}>>()
+
 const handlePressMenuButton = useCallback(() => {
-  navigation.openDrawer
+  navigation.openDrawer()
 }, [navigation])
 
 return (
