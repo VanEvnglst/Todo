@@ -12,14 +12,14 @@ return (
   <VStack h='300px' pb={5}>
     <Box
       w='full'
-      h='300px'
-      bg='amber.400'
-    />
+      h='400px'
+      bg='primary.300'
+    >
     {children}
-    <Box flex={1} />
-    <Heading color='white' p={6} size='xl'>
+    <Heading color='gray.700' p={6} size='xl'>
       {title}
     </Heading>
+    </Box>
   </VStack>
 )
 }
