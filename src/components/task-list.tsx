@@ -72,6 +72,10 @@ export const AnimatedTaskItem = (props: TaskItemProps) => {
     onRemove(data)
   }, [data, onRemove]);
 
+  const handlePriority = useCallback(() => {
+    onSetPriority(data)
+  }, [data, onSetPriority])
+
   return (
     <StyledView
       w='full'
@@ -102,6 +106,7 @@ export const AnimatedTaskItem = (props: TaskItemProps) => {
         onFinishEditing={handleFinishEditing}
         onPressLabel={handlePressLabel}
         onRemove={handleRemove}
+        onSetPriority={handlePriority}
       />
     </StyledView>
   )
@@ -116,6 +121,7 @@ const TaskList = (props: TaskListProps) => {
     onFinishEditing,
     onPressLabel,
     onRemoveItem,
+    onSetPriority
   } = props
   const refScrollView = useRef(null)
 
@@ -137,7 +143,7 @@ const TaskList = (props: TaskListProps) => {
           onFinishEditing={onFinishEditing}
           onPressLabel={onPressLabel}
           onRemove={onRemoveItem}
-          onSetPriority={() => console.log('set prio')}
+          onSetPriority={onSetPriority}
         />
       ))}
     </AnimatePresence>
