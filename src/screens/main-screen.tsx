@@ -1,26 +1,34 @@
 import React, { useCallback, useState } from 'react';
-import { Text, Box, Center, VStack, themeTools, useTheme, useColorMode, useColorModeValue, Fab, Icon } from 'native-base';
+import { VStack, useColorModeValue, Fab, Icon, Text, Pressable, HStack } from 'native-base';
+import shortid from 'shortid';
 import { AntDesign } from '@expo/vector-icons';
 import AnimatedColorBox from '../components/animated-color-box';
 import TaskList from '../components/task-list';
-import shortid from 'shortid';
+import TasksOverview from '../components/task-overview';
 import Masthead from '../components/masthead';
 import NavBar from '../components/navbar';
-import ThemeToggle from '../components/theme-toggle';
-import TaskItem from '../components/task-item';
+
 
 export default function MainScreen() {
   const initialData: any[] = [
     {
       id: shortid.generate(),
-      subject: 'New Task',
-      done: false
+      subject: 'Sample Task',
+      done: false,
+      priority: false,
     }
   ];
+  const initialPriorityData: any[] = [];
+  const initialCompletedData: any[] = [];
+
   const [data, setData] = useState(initialData);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [priorityData, setPriorityData] = useState(initialPriorityData);
+  const [completedData, setCompletedData] = useState(initialCompletedData);
+  const [seePriority, setSeePriority] = useState(false);
+  const [seeOverview, setSeeOverview] = useState(false);
 
-  const handleToggleTaskItem = useCallback(item => {
+  const handleToggleTaskItem = useCallback((item: any) => {
     setData(prevData => {
       const newData = [...prevData]
       const index = prevData.indexOf(item)
@@ -29,10 +37,18 @@ export default function MainScreen() {
         done: !item.done
       }
       return newData
-    })
+    });
+
+    let completedList = completedData;
+    if (completedList.some(complete => complete.id === item.id))
+      completedList.splice(completedList.indexOf(item), 1);
+    else
+      completedList.push(item)
+
+    setCompletedData(completedList)
   }, []);
 
-  const handleChangeTaskItemSubject = useCallback((item, newSubject) => {
+  const handleChangeTaskItemSubject = useCallback((item: any, newSubject: string) => {
     setData(prevData => {
       const newData = [...prevData]
       const index = prevData.indexOf(item)
@@ -48,24 +64,44 @@ export default function MainScreen() {
     setEditingItemId(null)
   }, []);
 
-  const handlePressTaskItemLabel = useCallback(item => {
+  const handlePressTaskItemLabel = useCallback((item: any) => {
     setEditingItemId(item.id)
   }, []);
 
-  const handleRemoveItem = useCallback(item => {
+  const handleRemoveItem = useCallback((item: any) => {
     setData(prevData => {
       const newData = prevData.filter(i => i !== item)
       return newData
     })
   }, []);
 
-  const handleSetItemPriority = useCallback(item => {
+  const handleItemPriority = useCallback((item: any) => {
+      setData(prevData => {
+        const newData = [...prevData]
+        const index = prevData.indexOf(item);
+        newData[index] = {
+          ...item,
+          priority: !item.priority,
+        }
+        return newData;
+      });
+
+      let newPriority = priorityData;       
+      if (newPriority.some(priority => priority.id === item.id))
+        newPriority.splice(newPriority.indexOf(item), 1)
+      else
+        newPriority.push(item);
+      setPriorityData(newPriority)
 
   }, []);
   
-  // const handlePressCheckBox = useCallback(() => {
-  //   setChecked(prev => !prev)
-  // }, []);
+  const handlePriorityListToggle = useCallback(() => {
+    setSeePriority(prevData => !prevData)
+  }, []);
+
+  const handleTaskOverviewToggle = useCallback(() => {
+    setSeeOverview(prevData => !prevData);
+  }, []);
 
   return (
     <AnimatedColorBox
@@ -82,11 +118,58 @@ export default function MainScreen() {
         flex={1}
         space={1}
         bg={useColorModeValue('warmGray.50', 'primary.900')}
-        mt='20px'
         borderTopLeftRadius='20px'
         borderTopRightRadius='20px'
         pt='20px'
       >
+        <HStack>
+        <Pressable
+          onPress={handlePriorityListToggle}
+          w={200}
+          h={30}
+          ml={5}
+          mb={10}          
+        >
+           <Text 
+             fontSize={16}
+             color={'blue.800'}
+             underline
+           >See all priority</Text>
+        </Pressable>
+        <Pressable
+          onPress={handleTaskOverviewToggle}
+          w={200}
+          h={30}
+          ml={5}
+          mb={10}          
+        >
+           <Text 
+             fontSize={16}
+             color={'blue.800'}
+             underline
+           >{seeOverview ? 'Hide task overview' : 'See task overview'}</Text>
+        </Pressable>
+        </HStack>
+        {seeOverview ?
+          <TasksOverview
+            totalTasks={data.length}
+            totalPriority={priorityData.length}
+            totalCompleted={completedData.length}
+          />
+        : null
+        }
+        {seePriority ?
+        <TaskList
+          data={priorityData}
+          onToggleItem={handleToggleTaskItem}
+          onChangeSubject={handleChangeTaskItemSubject}
+          onFinishEditing={handleFinishEditingTaskItem}
+          onPressLabel={handlePressTaskItemLabel}
+          onRemoveItem={handleRemoveItem}
+          editingItemId={editingItemId}
+          onSetPriority={handleItemPriority}
+        />
+        :
         <TaskList
           data={data}
           onToggleItem={handleToggleTaskItem}
@@ -95,8 +178,8 @@ export default function MainScreen() {
           onPressLabel={handlePressTaskItemLabel}
           onRemoveItem={handleRemoveItem}
           editingItemId={editingItemId}
-          onSetPriority={() => console.log('set task list')}
-        />
+          onSetPriority={handleItemPriority}
+        />}
       </VStack>
       <Fab
         position='absolute'
