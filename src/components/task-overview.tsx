@@ -23,7 +23,7 @@ const TasksOverview = (props: Props) => {
         flex={1}
         space={1} 
         px={2} 
-        mb={10}
+        mb={5}
         alignItems='center'
         justifyContent='space-between'
       >
@@ -40,7 +40,7 @@ const TasksOverview = (props: Props) => {
   }
 
 return (
-  <VStack flex={1} space={1} p={5}>
+  <VStack flex={1} space={1} p={3}>
       <OverviewItem
         title={'Total tasks'}
         value={totalTasks}
