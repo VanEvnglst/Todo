@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   ScrollView,
   Box,
@@ -9,12 +9,17 @@ import Navbar from '../components/navbar';
 import Masthead from '../components/masthead';
 import AnimatedColorBox from '../components/animated-color-box';
 import TasksOverview from '../components/task-overview';
-import { ToDoContext } from './main-screen';
+import { ToDoContext, useTaskCount } from '../store/contexts/task-context';
 
 const OverviewScreen = () => {
-  const todoValue = useContext(ToDoContext);
-  console.log('todo', todoValue)
+  const { tasks, updateTaskCount } = useTaskCount();
+
+  useEffect(() => {
+    updateTaskCount();
+  }, []);
+
   return (
+    <ToDoContext>
     <AnimatedColorBox
       flex={1}
       bg={useColorModeValue('warmGray.50', 'warmGray.900')}
@@ -34,13 +39,14 @@ const OverviewScreen = () => {
       >
         <VStack flex={1} space={4}>
           <TasksOverview 
-            totalTasks={todoValue?.totalTasks}
-            totalCompleted={todoValue?.totalCompleted}
-            totalPriority={todoValue?.totalPriority}
+            totalTasks={0}
+            totalCompleted={0}
+            totalPriority={0}
           />
         </VStack>
       </ScrollView>
     </AnimatedColorBox>
+    </ToDoContext>
   )
 }
 
